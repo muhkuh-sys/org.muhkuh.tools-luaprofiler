@@ -62,7 +62,7 @@ tArcList.AddFiles('',
                   'installer/install.lua')
 
 tArcList.AddFiles('lua/',
-                  'luaprofiler.lua')
+                  'LuaProfiler/luaprofiler.lua')
 
 tArtifact = atEnv.DEFAULT.Archive(os.path.join(strModulePath, '%s-%s.zip' % (strArtifact, PROJECT_VERSION)), None, ARCHIVE_CONTENTS = tArcList)
 tArtifactHash = atEnv.DEFAULT.Hash('%s.hash' % tArtifact[0].get_path(), tArtifact[0].get_path(), HASH_ALGORITHM='md5,sha1,sha224,sha256,sha384,sha512', HASH_TEMPLATE='${ID_UC}:${HASH}\n')
