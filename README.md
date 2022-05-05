@@ -9,7 +9,7 @@ The following code block shows how to implement the luaprofile module:
 ```
 local tProfiler = require("luaprofiler")(tLog)
 
-tProfiler:start({"netIOLGate_set_ilim", "netIOLGate_set", "usbMatrixTree_set","sample_raw","measureAnnabella"})
+tProfiler:start({"extract_evalData", "get_DefaultEvalData", "update_evalData"})
 
 -- Code block with called functions to profile
 
@@ -19,7 +19,7 @@ local tProfilerData = tProfiler:stop()
 
 1. The luaprofile module is initialized by: require("luaprofiler")(tLog)
 2. A table with function names to be examined is passed to the "start" function of the profiling module
-3. The "stop" function returns the result of the profiling like for example:
+3. The "stop" function returns a table with the result of the profiling like for example:
 ```
 {
   TotalTime = 34.09699010849,
@@ -40,7 +40,7 @@ local tProfilerData = tProfiler:stop()
   }
 }
 ```
-whereby all measured time is in [s].
+whereby all measured time is in seconds [s].
 
 ### Issues
 
@@ -49,5 +49,5 @@ whereby all measured time is in [s].
 ### Improvements
 
 - The hook function could be implemented in C. This could reduce a little bit the computational effort and hence improve the measured runtime of the registered function.
-- Thread
+- The profiling could be in a separate Lua state and a separate thread.
 
