@@ -43,16 +43,13 @@ local function hook(event, line, info)
   --   return
   -- end
 
-  if tSetFncNames[info.name] ~= true then
-    return
-  end
-
-  if event == "call" then
+  if event == "call" and tSetFncNames[info.name] == true then
     atEvalDataProfiler[info.name].StartTime = getTime()
     atEvalDataProfiler[info.name].count = atEvalDataProfiler[info.name].count + 1
-  elseif event == "return" then
+  elseif event == "return" and tSetFncNames[info.name] == true then
     -- atEvalDataProfiler[info.name].AllTime[#atEvalDataProfiler[info.name].AllTime + 1] = time
     local time = (getTime() - atEvalDataProfiler[info.name].StartTime)
+    atEvalDataProfiler[info.name].StartTime = 0
     atEvalDataProfiler[info.name].TotalTime = atEvalDataProfiler[info.name].TotalTime + time
 
     -- https://en.wikipedia.org/wiki/Moving_average
@@ -60,9 +57,13 @@ local function hook(event, line, info)
     -- atEvalDataProfiler[info.name].CA = (time + (atEvalDataProfiler[info.name].count - 1) * atEvalDataProfiler[info.name].CA) / atEvalDataProfiler[info.name].count
 
   elseif event == "tail call" then
-    local prev = debug_getinfo(3, "n")
-    hook("return", line, prev)
-    hook("call", line, info)
+    -- - However, there are restrictions on the functions that can be tracked:
+    -- - tail calls (https://en.wikipedia.org/wiki/Tail_call) 
+    --  - There are 3 different events with a registered hook using sethook (calling and returning functions): "call","return" und "tail call" 
+    --  - tail calls are not stored in the stack (https://stackoverflow.com/questions/56949901/strange-behavior-caused-by-debug-getinfo1-n-name oder http://lua-users.org/wiki/ProperTailRecursion), 
+    --     so there is no information about the tracked function in the hook function using debug.getinfo.
+    --  - Functions that end with a tail call cannot be tracked because there is no clear end ("return").
+    --  - Functions that begin with a tail call cannot be tracked because there is no clear beginning ("call").
   end
 end
 

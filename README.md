@@ -43,7 +43,12 @@ local tProfilerData = tProfiler:stop()
 whereby all measured time is in seconds [s].
 
 ### Issues
-
+- However, there are restrictions on the functions that can be tracked:
+  - tail calls (https://en.wikipedia.org/wiki/Tail_call) 
+  - There are 3 different events with a registered hook using sethook (calling and returning functions): "call","return" und "tail call" 
+  - tail calls are not stored in the stack (https://stackoverflow.com/questions/56949901/strange-behavior-caused-by-debug-getinfo1-n-name oder http://lua-users.org/wiki/ProperTailRecursion), so there is no information about the tracked function in the hook function using debug.getinfo.
+  - Functions that end with a tail call cannot be tracked because there is no clear end ("return").
+  - Functions that begin with a tail call cannot be tracked because there is no clear beginning ("call").
 - By repeatedly calling the defined hook function and reading out the function information using debug.getinfo (stack information), the profiling of lua with the module luaprofiler results in an increase of computational effort. This falsifies the measured runtimes of the registered functions.
 
 ### Improvements
